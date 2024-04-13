@@ -214,7 +214,7 @@ def parse(String description) {
 
 def installed() {
 	log.info "Installed on ${getHubPlatform()}"
-	initialize()
+	// Do nothing on install because a API key is required
 }
 
 def uninstalled() {
@@ -509,9 +509,10 @@ def parsePurpleAir(response) {
        log.error "No updates for ${roundIt((age/60000),2)} minutes"
     }
     log.info("AQI: ${aqi}")
-        
-    sendEvent(name: 'aqi', 	 value: aqi,   descriptionText: "AQI real time is ${aqi}")
-    sendEvent(name: 'aqiDisplay', value: "${aqi}\n${cond}", displayed: false)
+    if (device.currentValue('aqi') != aqi) {
+        sendEvent(name: 'aqi', 	 value: aqi,   descriptionText: "AQI real time is ${aqi}")
+        sendEvent(name: 'aqiDisplay', value: "${aqi}\n${cond}", displayed: false)
+    }
     def temperature
     def humidity
     def pressure
@@ -737,5 +738,4 @@ private def convertPressure(value, from, to) {
             return roundIt((value*0.02953005865),2)
             break;
     }
-    
 }
